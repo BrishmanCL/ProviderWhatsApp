@@ -1,7 +1,7 @@
 import { join } from 'path'
 import axios from 'axios'
 import { createFlow, addKeyword, utils, EVENTS } from '@builderbot/bot'
-import ChatWoot from '../services/chatwoot/index.js'
+import handleChatWootMessage from '../services/chatwoot/messageHandler.js'
 
 const discordFlow = addKeyword('doc').addAnswer(
     ['You can see the documentation here', '📄 https://builderbot.app/docs \n', 'Do you want to continue? *yes*'].join(
@@ -56,62 +56,12 @@ const fullSamplesFlow = addKeyword(['samples', utils.setEvent('SAMPLES')])
         media: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     })
 
-const mediaFlow = addKeyword(EVENTS.MEDIA).addAction(async (ctx, {provider}) => {
-
-    try {
-        const replySearhContact = await ChatWoot.SearchContact(ctx);
-
-        if (replySearhContact == null) { //Contacto nuevo
-            const { contact } = (await ChatWoot.CreateContact(ctx)).payload;
-            const { id } = await ChatWoot.CreateConversation({ ctx: ctx, contactId: contact.id });
-            await ChatWoot.CreateMessageIncoming({ ctx: ctx, conversationId: id });
-            return;
-        }
-        //Contacto existe
-        const replySearhConversation = await ChatWoot.SearchConversation({ contactId: replySearhContact.id });
-        if (replySearhConversation == null) { //Conversacion nueva
-            const { id } = await ChatWoot.CreateConversation({ ctx: ctx, contactId: replySearhContact.id });
-            await ChatWoot.CreateMessageIncoming({ ctx: ctx, conversationId: id });
-            return;
-        }
-        await ChatWoot.CreateMessageIncoming({ ctx: ctx, conversationId: replySearhConversation.id });
-        return;
-
-    } catch (error) {
-        console.log(error);
-    }
+const mediaFlow = addKeyword(EVENTS.MEDIA).addAction(async (ctx) => {
+    await handleChatWootMessage(ctx);
 })
 
 const initFlow = addKeyword(EVENTS.WELCOME).addAction(async (ctx) => {
-    const id = ctx.key.remoteJid
-    const phoneContact = ctx.from;
-
-    console.log("Mensaje entrante");
-    console.log(ctx);
-
-    try {
-        const replySearhContact = await ChatWoot.SearchContact(ctx);
-
-        if (replySearhContact == null) { //Contacto nuevo
-            const { contact } = (await ChatWoot.CreateContact(ctx)).payload;
-            const { id } = await ChatWoot.CreateConversation({ ctx: ctx, contactId: contact.id });
-            await ChatWoot.CreateMessageIncoming({ ctx: ctx, conversationId: id });
-            return;
-        }
-        //Contacto existe
-        const replySearhConversation = await ChatWoot.SearchConversation({ contactId: replySearhContact.id });
-        if (replySearhConversation == null) { //Conversacion nueva
-            const { id } = await ChatWoot.CreateConversation({ ctx: ctx, contactId: replySearhContact.id });
-            await ChatWoot.CreateMessageIncoming({ ctx: ctx, conversationId: id });
-            return;
-        }
-        await ChatWoot.CreateMessageIncoming({ ctx: ctx, conversationId: replySearhConversation.id });
-        return;
-
-    } catch (error) {
-        console.log(error);
-    }
-
+    await handleChatWootMessage(ctx);
 });
 
 //const adapterFlow = createFlow([welcomeFlow, registerFlow, fullSamplesFlow])
