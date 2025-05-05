@@ -1,0 +1,30 @@
+{
+  "name": "base-bailey-json",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --no-ignore",
+    "dev": "npm run lint && nodemon ./src/app.js",
+    "start": "node ./src/app.js"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@builderbot/bot": "1.2.5",
+    "@builderbot/provider-baileys": "1.2.5",
+    "@whiskeysockets/baileys": "^6.17.16",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "form-data": "^4.0.2",
+    "joi": "^17.13.3",
+    "sharp": "^0.32.6"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-plugin-builderbot": "latest",
+    "nodemon": "^3.1.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
